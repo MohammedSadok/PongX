@@ -1,28 +1,28 @@
 // Colors
-export const COLOR = "#FFFFFF"
-export const HIT_COLOR = "#333333"
-export const BACKGROUND_COLOR = "#000000"
-export const BALL_COLOR = "#FFFFFF"
-export const ACTIVE_BALL_COLOR = "#00ff99"
-export const PADDLE_COLOR = "#FFFFFF"
-export const NAVBAR_BG = "rgba(0, 0, 0, 0.5)"
-export const NAVBAR_ACTIVE = "rgba(0, 255, 153, 0.3)"
+export const COLOR = "#FFFFFF";
+export const HIT_COLOR = "#333333";
+export const BACKGROUND_COLOR = "#000000";
+export const BALL_COLOR = "#FFFFFF";
+export const ACTIVE_BALL_COLOR = "#00ff99";
+export const PADDLE_COLOR = "#FFFFFF";
+export const NAVBAR_BG = "rgba(0, 0, 0, 0.5)";
+export const NAVBAR_ACTIVE = "rgba(0, 255, 153, 0.3)";
 
 // Spacing
-export const LETTER_SPACING = 1
-export const WORD_SPACING = 3
+export const LETTER_SPACING = 1;
+export const WORD_SPACING = 3;
 
 // Game settings
-export const NAVBAR_HEIGHT = 60
+export const NAVBAR_HEIGHT = 60;
 
 // Sections - Updated Order
 export const SECTIONS = [
   { id: "welcome", label: "Welcome" }, // Changed order
-  { id: "home", label: "Home" },      // Changed order
+  { id: "home", label: "Home" }, // Changed order
   { id: "projects", label: "Projects" },
   { id: "about", label: "About" },
   { id: "contact", label: "Contact" },
-]
+];
 
 // Themes
 export const THEMES = [
@@ -71,73 +71,10 @@ export const THEMES = [
     textColor: "#FFEBEE",
     accentColor: "#F44336",
   },
-]
+];
 
-// Pixel map for text rendering
+// Pixel map for text rendering - sorted alphabetically and added missing B and V
 export const PIXEL_MAP = {
-  P: [
-    [1, 1, 1, 1],
-    [1, 0, 0, 1],
-    [1, 1, 1, 1],
-    [1, 0, 0, 0],
-    [1, 0, 0, 0],
-  ],
-  R: [
-    [1, 1, 1, 1],
-    [1, 0, 0, 1],
-    [1, 1, 1, 1],
-    [1, 0, 1, 0],
-    [1, 0, 0, 1],
-  ],
-  O: [
-    [1, 1, 1, 1],
-    [1, 0, 0, 1],
-    [1, 0, 0, 1],
-    [1, 0, 0, 1],
-    [1, 1, 1, 1],
-  ],
-  M: [
-    [1, 0, 0, 0, 1],
-    [1, 1, 0, 1, 1],
-    [1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1],
-  ],
-  T: [
-    [1, 1, 1, 1, 1],
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0],
-  ],
-  I: [
-    [1, 1, 1],
-    [0, 1, 0],
-    [0, 1, 0],
-    [0, 1, 0],
-    [1, 1, 1],
-  ],
-  N: [
-    [1, 0, 0, 0, 1],
-    [1, 1, 0, 0, 1],
-    [1, 0, 1, 0, 1],
-    [1, 0, 0, 1, 1],
-    [1, 0, 0, 0, 1],
-  ],
-  G: [
-    [1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0],
-    [1, 0, 1, 1, 1],
-    [1, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1],
-  ],
-  S: [
-    [1, 1, 1, 1],
-    [1, 0, 0, 0],
-    [1, 1, 1, 1],
-    [0, 0, 0, 1],
-    [1, 1, 1, 1],
-  ],
   A: [
     [0, 1, 1, 0],
     [1, 0, 0, 1],
@@ -145,26 +82,12 @@ export const PIXEL_MAP = {
     [1, 0, 0, 1],
     [1, 0, 0, 1],
   ],
-  L: [
-    [1, 0, 0, 0],
-    [1, 0, 0, 0],
-    [1, 0, 0, 0],
-    [1, 0, 0, 0],
-    [1, 1, 1, 1],
-  ],
-  Y: [
-    [1, 0, 0, 0, 1],
-    [0, 1, 0, 1, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0],
-  ],
-  U: [
+  B: [
+    [1, 1, 1, 0],
     [1, 0, 0, 1],
+    [1, 1, 1, 0],
     [1, 0, 0, 1],
-    [1, 0, 0, 1],
-    [1, 0, 0, 1],
-    [1, 1, 1, 1],
+    [1, 1, 1, 0],
   ],
   D: [
     [1, 1, 1, 0],
@@ -180,4 +103,109 @@ export const PIXEL_MAP = {
     [1, 0, 0, 0],
     [1, 1, 1, 1],
   ],
-}
+  G: [
+    [1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0],
+    [1, 0, 1, 1, 1],
+    [1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1],
+  ],
+  H: [
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+  ],
+  I: [
+    [1, 1, 1],
+    [0, 1, 0],
+    [0, 1, 0],
+    [0, 1, 0],
+    [1, 1, 1],
+  ],
+  L: [
+    [1, 0, 0, 0],
+    [1, 0, 0, 0],
+    [1, 0, 0, 0],
+    [1, 0, 0, 0],
+    [1, 1, 1, 1],
+  ],
+  M: [
+    [1, 0, 0, 0, 1],
+    [1, 1, 0, 1, 1],
+    [1, 0, 1, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+  ],
+  N: [
+    [1, 0, 0, 0, 1],
+    [1, 1, 0, 0, 1],
+    [1, 0, 1, 0, 1],
+    [1, 0, 0, 1, 1],
+    [1, 0, 0, 0, 1],
+  ],
+  O: [
+    [1, 1, 1, 1],
+    [1, 0, 0, 1],
+    [1, 0, 0, 1],
+    [1, 0, 0, 1],
+    [1, 1, 1, 1],
+  ],
+  P: [
+    [1, 1, 1, 1],
+    [1, 0, 0, 1],
+    [1, 1, 1, 1],
+    [1, 0, 0, 0],
+    [1, 0, 0, 0],
+  ],
+  R: [
+    [1, 1, 1, 1],
+    [1, 0, 0, 1],
+    [1, 1, 1, 1],
+    [1, 0, 1, 0],
+    [1, 0, 0, 1],
+  ],
+  S: [
+    [1, 1, 1, 1],
+    [1, 0, 0, 0],
+    [1, 1, 1, 1],
+    [0, 0, 0, 1],
+    [1, 1, 1, 1],
+  ],
+  T: [
+    [1, 1, 1, 1, 1],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+  ],
+  U: [
+    [1, 0, 0, 1],
+    [1, 0, 0, 1],
+    [1, 0, 0, 1],
+    [1, 0, 0, 1],
+    [1, 1, 1, 1],
+  ],
+  V: [
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [0, 1, 0, 1, 0],
+    [0, 0, 1, 0, 0],
+  ],
+  Y: [
+    [1, 0, 0, 0, 1],
+    [0, 1, 0, 1, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+  ],
+  " ": [
+    [0],
+    [0],
+    [0],
+    [0],
+    [0],
+  ],
+};
