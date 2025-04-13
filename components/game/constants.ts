@@ -15,10 +15,10 @@ export const WORD_SPACING = 3
 // Game settings
 export const NAVBAR_HEIGHT = 60
 
-// Sections
+// Sections - Updated Order
 export const SECTIONS = [
-  { id: "home", label: "Home" },
-  { id: "welcome", label: "Welcome" },
+  { id: "welcome", label: "Welcome" }, // Changed order
+  { id: "home", label: "Home" },      // Changed order
   { id: "projects", label: "Projects" },
   { id: "about", label: "About" },
   { id: "contact", label: "Contact" },

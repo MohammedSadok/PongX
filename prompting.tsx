@@ -4,16 +4,16 @@ import { useCallback, useRef, useState } from "react";
 import { GameCanvas } from "./components/game/GameCanvas";
 import { AboutSection } from "./components/sections/AboutSection";
 import { ContactSection } from "./components/sections/ContactSection";
-import { HomeSection } from "./components/sections/HomeSection";
 import { ProjectsSection } from "./components/sections/ProjectsSection";
-import { WelcomeSection } from "./components/sections/WelcomeSection";
 import { ThemeProvider } from "./components/ThemeContext";
 import { ThemePalette } from "./components/ThemePalette";
+import HomeSection from "./components/sections/HomeSection";
+import WelcomeSection from "./components/sections/WelcomeSection";
 
 export function PromptingIsAllYouNeed() {
-  const [activeSection, setActiveSection] = useState("home");
+  const [activeSection, setActiveSection] = useState("welcome");
   // Use a ref to track section changes without re-rendering the GameCanvas
-  const activeSectionRef = useRef("home");
+  const activeSectionRef = useRef("welcome");
 
   // Use useCallback to prevent re-creation of the setActiveSection function
   const handleSectionChange = useCallback((section: string) => {
