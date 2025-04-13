@@ -1,9 +1,9 @@
 "use client";
 
-import type React from "react";
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { THEMES } from "./game/constants";
-import type { Theme } from "./game/types";
+
+type Theme = (typeof THEMES)[0];
 
 interface ThemeContextType {
   currentTheme: Theme;
@@ -15,71 +15,38 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType>({
   currentTheme: THEMES[0],
   setTheme: () => {},
-  ballCount: 1,
+  ballCount: 3,
   setBallCount: () => {},
 });
 
 export const useTheme = () => useContext(ThemeContext);
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [currentTheme, setCurrentTheme] = useState<Theme>(THEMES[0]);
-  const [ballCount, setBallCount] = useState<number>(1);
+  const [ballCount, setBallCount] = useState<number>(3);
 
   const setTheme = (themeName: string) => {
-    const theme = THEMES.find((t) => t.name === themeName) || THEMES[0];
-    setCurrentTheme(theme);
-    localStorage.setItem("theme", themeName);
+    const theme = THEMES.find((t) => t.name === themeName);
+    if (theme) {
+      setCurrentTheme(theme);
+    }
   };
 
-  // Fixed ball count handler with more direct approach
+  // Ensure ball count is always within valid range
   const handleSetBallCount = (count: number) => {
-    // Ensure we're working with numbers
-    const newCount = Number(count);
-
-    // Guard against NaN
-    if (isNaN(newCount)) {
-      console.error("Invalid ball count value:", count);
-      return;
-    }
-
-    // Clamp the value between 1 and 5
-    const validCount = Math.max(1, Math.min(5, newCount));
-
+    const validCount = Math.max(1, Math.min(5, count));
     console.log(`ThemeContext: Setting ball count to ${validCount}`);
-
-    // Update state directly
     setBallCount(validCount);
-
-    // Save to localStorage
-    try {
-      localStorage.setItem("ballCount", validCount.toString());
-    } catch (e) {
-      console.error("Failed to save ball count to localStorage:", e);
-    }
   };
 
-  // Load settings from localStorage on mount
+  // Debug state changes
   useEffect(() => {
-    try {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme) {
-        setTheme(savedTheme);
-      }
+    console.log(`Theme changed to: ${currentTheme.name}`);
+  }, [currentTheme]);
 
-      const savedBallCount = localStorage.getItem("ballCount");
-      if (savedBallCount) {
-        const parsedCount = parseInt(savedBallCount, 10);
-        if (!isNaN(parsedCount) && parsedCount >= 1 && parsedCount <= 5) {
-          setBallCount(parsedCount);
-          console.log(`Loaded ball count from storage: ${parsedCount}`);
-        }
-      }
-    } catch (e) {
-      console.error("Error loading settings from localStorage:", e);
-    }
-  }, []);
+  useEffect(() => {
+    console.log(`Ball count in context is now: ${ballCount}`);
+  }, [ballCount]);
 
   return (
     <ThemeContext.Provider
@@ -93,4 +60,4 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       {children}
     </ThemeContext.Provider>
   );
-};
+}

@@ -2,45 +2,59 @@ export function ProjectsSection() {
   return (
     <div className="text-center max-w-6xl mx-auto px-4 transition-all duration-500 transform">
       <h1 className="text-4xl md:text-6xl font-bold mb-6">Projects</h1>
-      <p className="text-xl mb-8">Check out our latest interactive projects and experiments</p>
+      <p className="text-xl mb-8">
+        Showcasing my latest development work and technical innovations
+      </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
         {[
           {
-            title: "Neural Canvas",
-            description: "AI-powered drawing tool that transforms sketches into detailed artwork",
+            title: "ClassEye",
+            description:
+              "Microservices application for intelligent classroom attendance management integrating facial recognition. Built with Spring Boot, Spring Cloud, Jenkins, Docker, Vite, React, Redux and TypeScript.",
             image: "/placeholder.svg?height=200&width=300",
-            tags: ["AI", "Canvas", "WebGL"],
+            tags: [
+              "Spring Boot",
+              "Spring Cloud",
+              "DevOps",
+              "React",
+              "Microservices",
+            ],
           },
           {
-            title: "Quantum Simulator",
-            description: "Interactive visualization of quantum computing principles and algorithms",
+            title: "Black Pixel",
+            description:
+              "Multimedia analysis application developed with Next.js, Tailwind CSS and TensorFlow, allowing users to import images, apply filters, detect objects and dynamically modify image resolution.",
             image: "/placeholder.svg?height=200&width=300",
-            tags: ["Physics", "Education", "3D"],
+            tags: ["Next.js", "TensorFlow", "Tailwind CSS", "Image Processing"],
           },
           {
-            title: "EcoSystem",
-            description: "Simulated environment with artificial life forms that evolve over time",
+            title: "MicroPay",
+            description:
+              "Innovative application for making micro-payments, developed with React (Vite) and using the Solana blockchain to ensure fast, secure and low-cost transactions.",
             image: "/placeholder.svg?height=200&width=300",
-            tags: ["Simulation", "Biology", "AI"],
+            tags: ["React", "Vite", "Blockchain", "Solana"],
           },
           {
-            title: "Sound Waves",
-            description: "Audio visualization tool that creates stunning patterns from music",
+            title: "E-Commerce Platform",
+            description:
+              "Comprehensive e-commerce application with Spring Boot backend, Next.js frontend, and a React Native mobile version, offering a complete shopping experience.",
             image: "/placeholder.svg?height=200&width=300",
-            tags: ["Audio", "Visualization", "WebAudio"],
+            tags: ["Spring Boot", "Next.js", "React Native", "Full Stack"],
           },
           {
-            title: "Data Explorer",
-            description: "Interactive 3D visualization of complex datasets and relationships",
+            title: "Exam Management System",
+            description:
+              "Full-stack application for managing and scheduling exam sessions, including supervisor distribution, teacher assignment, location booking and student management.",
             image: "/placeholder.svg?height=200&width=300",
-            tags: ["Data", "3D", "Analytics"],
+            tags: ["Next.js", "Spring Boot", "MySQL", "Full Stack"],
           },
           {
-            title: "Particle Flow",
-            description: "Physics-based particle system with fluid dynamics and user interaction",
+            title: "Olive Grove Monitoring",
+            description:
+              "Mobile application for tracking and managing olive groves, featuring data collection, analysis, and reporting tools for agricultural management.",
             image: "/placeholder.svg?height=200&width=300",
-            tags: ["Physics", "WebGL", "Interactive"],
+            tags: ["React Native", "Spring Boot", "MySQL", "Mobile"],
           },
         ].map((project, index) => (
           <div
@@ -55,10 +69,15 @@ export function ProjectsSection() {
               />
             </div>
             <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-            <p className="text-gray-400 mb-4 flex-grow">{project.description}</p>
+            <p className="text-gray-400 mb-4 flex-grow">
+              {project.description}
+            </p>
             <div className="flex flex-wrap gap-2 mt-auto">
               {project.tags.map((tag, tagIndex) => (
-                <span key={tagIndex} className="text-xs px-2 py-1 rounded-full bg-gray-700 text-gray-300">
+                <span
+                  key={tagIndex}
+                  className="text-xs px-2 py-1 rounded-full bg-gray-700 text-gray-300"
+                >
                   {tag}
                 </span>
               ))}
@@ -73,5 +92,5 @@ export function ProjectsSection() {
         </button>
       </div>
     </div>
-  )
+  );
 }

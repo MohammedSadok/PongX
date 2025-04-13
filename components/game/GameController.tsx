@@ -71,6 +71,8 @@ export function useGameController({
     // Only initialize once to prevent re-rendering
     if (gameInitializedRef.current) return;
 
+    console.log(`Initializing game with ${ballCount} balls`);
+
     const scale = scaleRef.current;
     // Significantly increase pixel sizes for much larger text
     const LARGE_PIXEL_SIZE = 16 * scale;
@@ -233,12 +235,10 @@ export function useGameController({
     const ballSize = adjustedLargePixelSize * 0.7;
     const baseSpeed = 7.5 * scale;
 
-    // Initialize multiple balls
+    // Initialize multiple balls - ensure we use exactly the number specified by ballCount
     ballsRef.current = [];
-    // Clear any existing balls
-    while (ballsRef.current.length > 0) {
-      ballsRef.current.pop();
-    }
+
+    console.log(`Creating exactly ${ballCount} balls`);
 
     // Create new balls based on ballCount
     for (let i = 0; i < ballCount; i++) {
@@ -330,19 +330,22 @@ export function useGameController({
     gameInitializedRef.current = true;
   }, [canvasWidth, canvasHeight, ballCount]);
 
-  // Effect to update balls when ball count changes - simpler implementation
+  // Effect to update balls when ball count changes - improved implementation
   useEffect(() => {
-    // Log the change and force reinitialization
+    // Log the change
     console.log(`GameController: Ball count changed to ${ballCount}`);
 
-    // Clear any existing balls first
+    // Clear any existing balls
     ballsRef.current = [];
 
     // Reset game initialization flag
     gameInitializedRef.current = false;
 
-    // Initialize with new ball count
-    initializeGame();
+    // Force re-initialization with a clean slate
+    setTimeout(() => {
+      console.log(`Reinitializing game with ${ballCount} balls`);
+      initializeGame();
+    }, 50); // Slightly longer delay to ensure state is fully updated
   }, [ballCount, initializeGame]);
 
   // Ball control functions

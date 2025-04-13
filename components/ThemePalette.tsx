@@ -1,36 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { THEMES } from "./game/constants";
 import { useTheme } from "./ThemeContext";
 
 export function ThemePalette() {
   const { currentTheme, setTheme, ballCount, setBallCount } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const [localBallCount, setLocalBallCount] = useState(ballCount);
 
-  // Simplified direct handlers
+  // Sync local state with global ball count
+  useEffect(() => {
+    setLocalBallCount(ballCount);
+  }, [ballCount]);
+
+  // Fixed direct handlers to properly set ball count
   const decreaseBalls = () => {
-    if (ballCount > 1) {
-      // Force the count to be exactly one less than current count
-      const newCount = Math.max(1, ballCount - 1);
+    if (localBallCount > 1) {
+      // Get the exact number we want
+      const newCount = localBallCount - 1;
       console.log(
-        `DECREASE: Setting ball count to ${newCount} (from ${ballCount})`
+        `DECREASE: Setting ball count to ${newCount} (from ${localBallCount})`
       );
-      // Direct state update with the exact number
-      setBallCount(newCount);
+      // Update local state first
+      setLocalBallCount(newCount);
+      // Then update global state with a small delay to ensure proper rendering
+      setTimeout(() => {
+        setBallCount(newCount);
+      }, 10);
     }
   };
 
   const increaseBalls = () => {
-    if (ballCount < 5) {
-      // Force the count to be exactly one more than current count
-      const newCount = Math.min(5, ballCount + 1);
+    if (localBallCount < 5) {
+      // Get the exact number we want
+      const newCount = localBallCount + 1;
       console.log(
-        `INCREASE: Setting ball count to ${newCount} (from ${ballCount})`
+        `INCREASE: Setting ball count to ${newCount} (from ${localBallCount})`
       );
-      // Direct state update with the exact number
-      setBallCount(newCount);
+      // Update local state first
+      setLocalBallCount(newCount);
+      // Then update global state with a small delay to ensure proper rendering
+      setTimeout(() => {
+        setBallCount(newCount);
+      }, 10);
     }
+  };
+
+  // Direct ball count selection with proper state management
+  const setDirectBallCount = (count: number) => {
+    console.log(`Directly setting ball count to: ${count}`);
+    // Update local state first
+    setLocalBallCount(count);
+    // Then update global state with a small delay to ensure proper rendering
+    setTimeout(() => {
+      setBallCount(count);
+    }, 10);
   };
 
   return (
@@ -59,7 +84,7 @@ export function ThemePalette() {
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-16 right-0 bg-black bg-opacity-80 p-4 rounded-lg shadow-xl flex flex-col gap-4 transition-all w-64">
+        <div className="absolute bottom-16 right-0 bg-black bg-opacity-80 p-4 rounded-lg shadow-xl flex flex-col gap-4 transition-all w-64 z-30">
           {/* Theme Controls */}
           <div>
             <p className="text-white text-sm mb-2 font-semibold">
@@ -86,18 +111,18 @@ export function ThemePalette() {
           {/* Ball Count Controls */}
           <div>
             <p className="text-white text-sm mb-2 font-semibold">
-              Ball Count: {ballCount}
+              Ball Count: {localBallCount}
             </p>
             <div className="flex items-center gap-3">
               <button
                 onClick={decreaseBalls}
                 className={`${
-                  ballCount <= 1
+                  localBallCount <= 1
                     ? "bg-gray-800 text-gray-600"
                     : "bg-gray-700 hover:bg-gray-600 text-white"
                 } w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-colors`}
                 aria-label="Decrease ball count"
-                disabled={ballCount <= 1}
+                disabled={localBallCount <= 1}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -118,7 +143,7 @@ export function ThemePalette() {
                 <div
                   className="h-2 rounded-full"
                   style={{
-                    width: `${(ballCount / 5) * 100}%`,
+                    width: `${(localBallCount / 5) * 100}%`,
                     backgroundColor: currentTheme.activeBallColor,
                   }}
                 ></div>
@@ -127,12 +152,12 @@ export function ThemePalette() {
               <button
                 onClick={increaseBalls}
                 className={`${
-                  ballCount >= 5
+                  localBallCount >= 5
                     ? "bg-gray-800 text-gray-600"
                     : "bg-gray-700 hover:bg-gray-600 text-white"
                 } w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-colors`}
                 aria-label="Increase ball count"
-                disabled={ballCount >= 5}
+                disabled={localBallCount >= 5}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -161,9 +186,9 @@ export function ThemePalette() {
               {[1, 2, 3, 4, 5].map((count) => (
                 <button
                   key={count}
-                  onClick={() => setBallCount(count)}
+                  onClick={() => setDirectBallCount(count)}
                   className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ${
-                    ballCount === count
+                    localBallCount === count
                       ? "bg-blue-600 text-white"
                       : "bg-gray-700 hover:bg-gray-600 text-white"
                   }`}
