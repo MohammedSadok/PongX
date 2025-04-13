@@ -47,7 +47,7 @@ export const GameCanvas = memo(
     // Initialize game controller
     const {
       pixelsRef,
-      ballRef,
+      ballsRef,
       paddlesRef,
       navbarRef,
       navbarHeightRef,
@@ -71,37 +71,59 @@ export const GameCanvas = memo(
 
     // Update game state
     const updateGame = useCallback(() => {
-      const ball = ballRef.current;
+      const balls = ballsRef.current;
       const paddles = paddlesRef.current;
       const navbar = navbarRef.current;
       const canvas = canvasRef.current;
-      if (!canvas) return;
+      if (!canvas || balls.length === 0) return;
 
       // Always keep full opacity
       opacityRef.current = 1.0;
 
-      // Update ball physics
-      updateBallPhysics(
-        ball,
-        navbarHeightRef.current,
-        canvas.width,
-        canvas.height,
-        audioRef
-      );
+      // Update each ball's physics and interactions
+      balls.forEach((ball) => {
+        // Update ball physics
+        updateBallPhysics(
+          ball,
+          navbarHeightRef.current,
+          canvas.width,
+          canvas.height,
+          audioRef
+        );
+
+        // Check for navbar collisions for each ball
+        checkNavbarCollisions(navbar, ball, audioRef, changeSection);
+
+        // Check paddle collisions for each ball
+        checkPaddleCollisions(paddles, ball, audioRef);
+      });
+
+      // Find the nearest ball to update paddles
+      // This makes paddles react to the nearest ball for better gameplay
+      if (balls.length > 0) {
+        let targetBall = balls[0];
+
+        // If we have multiple balls, find a non-user-controlled ball if possible
+        if (balls.length > 1) {
+          // Try to find a non-user-controlled ball first
+          const freeBall = balls.find((ball) => !ball.isUserControlled);
+          if (freeBall) {
+            targetBall = freeBall;
+          }
+        }
+
+        // Update paddles based on target ball position
+        updatePaddles(paddles, targetBall, canvas.width, canvas.height);
+      }
 
       // Update navbar animation effects
       updateNavbar(navbar);
 
-      // Check for navbar collisions
-      checkNavbarCollisions(navbar, ball, audioRef, changeSection);
-
-      // Check paddle collisions and update paddles
-      checkPaddleCollisions(paddles, ball, audioRef);
-      updatePaddles(paddles, ball, canvas.width, canvas.height);
-
       // Only check pixel collisions if we're on the home section
       if (activeSectionRef.current === "welcome") {
-        checkPixelCollisions(pixelsRef.current, ball, audioRef);
+        balls.forEach((ball) => {
+          checkPixelCollisions(pixelsRef.current, ball, audioRef);
+        });
       }
     }, [changeSection]);
 
@@ -118,15 +140,17 @@ export const GameCanvas = memo(
       ctx.fillStyle = BACKGROUND_COLOR;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw ball and trail
-      drawBall({
-        ctx,
-        ball: ballRef.current,
-        opacity: opacityRef.current,
-        theme: {
-          ballColor: currentTheme.ballColor,
-          activeBallColor: currentTheme.activeBallColor,
-        },
+      // Draw multiple balls and their trails
+      ballsRef.current.forEach((ball) => {
+        drawBall({
+          ctx,
+          ball,
+          opacity: opacityRef.current,
+          theme: {
+            ballColor: currentTheme.ballColor,
+            activeBallColor: currentTheme.activeBallColor,
+          },
+        });
       });
 
       // Only draw pixels if we're on the home section
@@ -183,6 +207,25 @@ export const GameCanvas = memo(
       window.addEventListener("touchmove", handleMouseMove);
       window.addEventListener("touchend", handleMouseUp);
 
+      // Update cursor for interactive elements
+      document.addEventListener("mousemove", (e) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        // Check if mouse is over any ball
+        const mouseOverBall = ballsRef.current.some((ball) => {
+          const dx = e.clientX - ball.x;
+          const dy = e.clientY - ball.y;
+          return Math.sqrt(dx * dx + dy * dy) < ball.radius * 2;
+        });
+
+        if (mouseOverBall) {
+          document.body.style.cursor = "grab";
+        } else {
+          document.body.style.cursor = "auto";
+        }
+      });
+
       // Start game loop
       gameLoop();
 
@@ -199,6 +242,7 @@ export const GameCanvas = memo(
         window.removeEventListener("touchstart", handleMouseDown);
         window.removeEventListener("touchmove", handleMouseMove);
         window.removeEventListener("touchend", handleMouseUp);
+        document.body.style.cursor = "auto";
       };
     }, [
       resizeCanvas,

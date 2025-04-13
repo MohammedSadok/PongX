@@ -1,49 +1,66 @@
-import type React from "react"
-import type { Ball } from "./types"
+import type React from "react";
+import type { Ball } from "./types";
 
 /**
  * Normalizes ball velocity to maintain constant speed
  */
-export const normalizeBallVelocity = (ball: Ball): void => {
-  if (!ball.isUserControlled) {
-    const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy)
-    if (speed !== 0) {
-      const scale = ball.baseSpeed / speed
-      ball.dx *= scale
-      ball.dy *= scale
-    } else {
-      // If speed is 0, give it a random direction
-      const angle = Math.random() * Math.PI * 2
-      ball.dx = Math.cos(angle) * ball.baseSpeed
-      ball.dy = Math.sin(angle) * ball.baseSpeed
-    }
+export function normalizeBallVelocity(ball: Ball): void {
+  const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
+
+  // Only normalize if the ball has some velocity and isn't being controlled
+  if (speed > 0 && !ball.isUserControlled) {
+    // Use the ball's base speed
+    const desiredSpeed = ball.baseSpeed;
+
+    // Scale the velocity components
+    ball.dx = (ball.dx / speed) * desiredSpeed;
+    ball.dy = (ball.dy / speed) * desiredSpeed;
+  }
+
+  // For user-controlled, just ensure a minimum speed when released
+  if (ball.isUserControlled === false && speed < ball.baseSpeed * 0.5) {
+    // Add a small random velocity if ball is too slow
+    const angle = Math.random() * Math.PI * 2;
+    ball.dx = Math.cos(angle) * ball.baseSpeed;
+    ball.dy = Math.sin(angle) * ball.baseSpeed;
   }
 }
 
 /**
  * Plays a simple collision sound
  */
-export const playCollisionSound = (audioRef: React.RefObject<HTMLAudioElement>): void => {
+export function playCollisionSound(
+  audioRef: React.RefObject<HTMLAudioElement>
+): void {
   if (audioRef.current) {
-    audioRef.current.currentTime = 0
-    audioRef.current.play().catch((e) => console.log("Audio play failed:", e))
+    const audio = audioRef.current;
+    audio.currentTime = 0;
+    audio.play().catch((error) => {
+      // Ignore errors from browsers that block autoplay
+      console.log("Audio play prevented:", error);
+    });
   }
 }
 
 /**
  * Calculates the width of a word based on the pixel map
  */
-export const calculateWordWidth = (
+export function calculateWordWidth(
   word: string,
   pixelSize: number,
   pixelMap: Record<string, number[][]>,
-  letterSpacing: number,
-): number => {
-  return (
-    word.split("").reduce((width, letter) => {
-      const letterWidth = pixelMap[letter as keyof typeof pixelMap]?.[0]?.length ?? 0
-      return width + letterWidth * pixelSize + letterSpacing * pixelSize
-    }, 0) -
-    letterSpacing * pixelSize
-  )
+  letterSpacing: number
+): number {
+  let width = 0;
+  for (let i = 0; i < word.length; i++) {
+    const letter = word[i].toUpperCase();
+    const map = pixelMap[letter as keyof typeof pixelMap];
+    if (map && map[0]) {
+      width += map[0].length * pixelSize;
+      if (i < word.length - 1) {
+        width += letterSpacing * pixelSize;
+      }
+    }
+  }
+  return width;
 }

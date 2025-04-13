@@ -9,6 +9,8 @@ import { ThemeProvider } from "./components/ThemeContext";
 import { ThemePalette } from "./components/ThemePalette";
 import HomeSection from "./components/sections/HomeSection";
 import WelcomeSection from "./components/sections/WelcomeSection";
+// Import the debug component
+// import { BallCountDebug } from "./components/BallCountDebug";
 
 export function PromptingIsAllYouNeed() {
   const [activeSection, setActiveSection] = useState("welcome");
@@ -58,6 +60,9 @@ export function PromptingIsAllYouNeed() {
           {renderActiveSection()}
         </div>
       </div>
+
+      {/* Uncomment for debugging */}
+      {/* <BallCountDebug /> */}
     </ThemeProvider>
   );
 }

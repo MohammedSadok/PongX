@@ -1,0 +1,26 @@
+/* Z-index stacking order for components */
+
+.z-canvas {
+  z-index: 10;
+}
+
+.z-content {
+  z-index: 20;
+}
+
+.z-controls {
+  z-index: 50;
+}
+
+.z-debug {
+  z-index: 100;
+}
+
+/* Make sure pointer events work properly on layered elements */
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.pointer-events-auto {
+  pointer-events: auto;
+}

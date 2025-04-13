@@ -70,7 +70,7 @@ export function updateBallPhysics(
   // Update ball physics
   if (ball.isActive) {
     if (ball.isUserControlled) {
-      // User-controlled movement (when clicking)
+      // User-controlled movement with enhanced responsiveness
       // Calculate direction vector
       const dx = ball.targetX - ball.x;
       const dy = ball.targetY - ball.y;
@@ -83,9 +83,9 @@ export function updateBallPhysics(
         const nx = dx / distance;
         const ny = dy / distance;
 
-        // Apply acceleration
-        ball.dx += nx * ball.acceleration;
-        ball.dy += ny * ball.acceleration;
+        // Apply acceleration - increased for better responsiveness
+        ball.dx += nx * ball.acceleration * 1.2;
+        ball.dy += ny * ball.acceleration * 1.2;
 
         // Apply max velocity
         const currentVelocity = Math.sqrt(
@@ -96,15 +96,19 @@ export function updateBallPhysics(
           ball.dx *= scale;
           ball.dy *= scale;
         }
+      } else {
+        // If close to target, slow down faster
+        ball.dx *= 0.8;
+        ball.dy *= 0.8;
       }
-
-      // Apply friction
-      ball.dx *= ball.friction;
-      ball.dy *= ball.friction;
     } else {
       // Ensure constant speed for Pong-like movement
       normalizeBallVelocity(ball);
     }
+
+    // Apply friction (reduced slightly for more responsive movement when controlled)
+    ball.dx *= ball.isUserControlled ? 0.92 : ball.friction;
+    ball.dy *= ball.isUserControlled ? 0.92 : ball.friction;
 
     // Update position
     ball.x += ball.dx;

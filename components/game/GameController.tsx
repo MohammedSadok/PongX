@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   LETTER_SPACING,
   NAVBAR_HEIGHT,
@@ -8,6 +8,7 @@ import {
 } from "./constants";
 import type { Ball, NavItem, Paddle, Pixel } from "./types";
 import { calculateWordWidth, normalizeBallVelocity } from "./utils";
+import { useTheme } from "../ThemeContext";
 
 interface GameControllerProps {
   activeSection: string;
@@ -22,24 +23,9 @@ export function useGameController({
   canvasWidth,
   canvasHeight,
 }: GameControllerProps) {
+  const { ballCount } = useTheme();
   const pixelsRef = useRef<Pixel[]>([]);
-  const ballRef = useRef<Ball>({
-    x: 0,
-    y: 0,
-    dx: 0,
-    dy: 0,
-    radius: 0,
-    targetX: 0,
-    targetY: 0,
-    velocity: 0,
-    maxVelocity: 15,
-    friction: 0.95,
-    acceleration: 0.5,
-    isActive: true,
-    isUserControlled: false,
-    trail: [],
-    baseSpeed: 5,
-  });
+  const ballsRef = useRef<Ball[]>([]);
   const paddlesRef = useRef<Paddle[]>([]);
   const scaleRef = useRef(1);
   const navbarRef = useRef<NavItem[]>([]);
@@ -87,8 +73,8 @@ export function useGameController({
 
     const scale = scaleRef.current;
     // Significantly increase pixel sizes for much larger text
-    const LARGE_PIXEL_SIZE = 16 * scale; // Increased from 12
-    const SMALL_PIXEL_SIZE = 9 * scale; // Increased from 7
+    const LARGE_PIXEL_SIZE = 16 * scale;
+    const SMALL_PIXEL_SIZE = 9 * scale;
     const navbarHeight = navbarHeightRef.current;
 
     pixelsRef.current = [];
@@ -244,35 +230,47 @@ export function useGameController({
     });
 
     // Scale ball size to match the larger text
-    const ballSize = adjustedLargePixelSize * 0.7; // Make ball slightly larger too
+    const ballSize = adjustedLargePixelSize * 0.7;
+    const baseSpeed = 7.5 * scale;
 
-    // Initialize ball position near the center
-    const ballStartX = canvasWidth * 0.5;
-    const ballStartY = canvasHeight * 0.5;
-    const baseSpeed = 7.5 * scale; // Faster ball
+    // Initialize multiple balls
+    ballsRef.current = [];
+    // Clear any existing balls
+    while (ballsRef.current.length > 0) {
+      ballsRef.current.pop();
+    }
 
-    // Set initial direction at a random angle
-    const angle = Math.random() * Math.PI * 2;
-    const dx = Math.cos(angle) * baseSpeed;
-    const dy = Math.sin(angle) * baseSpeed;
+    // Create new balls based on ballCount
+    for (let i = 0; i < ballCount; i++) {
+      // Randomize starting positions for multiple balls
+      const ballStartX = canvasWidth * (0.3 + Math.random() * 0.4); // Random x within central 40% of the canvas
+      const ballStartY = canvasHeight * (0.3 + Math.random() * 0.4); // Random y within central 40% of the canvas
 
-    ballRef.current = {
-      x: ballStartX,
-      y: ballStartY,
-      dx: dx,
-      dy: dy,
-      radius: ballSize, // Use the new ball size
-      targetX: ballStartX,
-      targetY: ballStartY,
-      velocity: 0,
-      maxVelocity: 18 * scale,
-      friction: 0.95,
-      acceleration: 0.5 * scale,
-      isActive: true,
-      isUserControlled: false,
-      trail: [],
-      baseSpeed: baseSpeed,
-    };
+      // Set initial direction at a random angle with some spread
+      const angle = Math.random() * Math.PI * 2;
+      const dx = Math.cos(angle) * baseSpeed;
+      const dy = Math.sin(angle) * baseSpeed;
+
+      ballsRef.current.push({
+        x: ballStartX,
+        y: ballStartY,
+        dx: dx,
+        dy: dy,
+        radius: ballSize,
+        targetX: ballStartX,
+        targetY: ballStartY,
+        velocity: 0,
+        maxVelocity: 18 * scale,
+        friction: 0.95,
+        acceleration: 0.5 * scale,
+        isActive: true,
+        isUserControlled: false,
+        trail: [],
+        baseSpeed: baseSpeed,
+      });
+    }
+
+    console.log(`Initialized ${ballsRef.current.length} balls`);
 
     const paddleWidth = adjustedLargePixelSize;
     const paddleLength = 10 * adjustedLargePixelSize;
@@ -330,13 +328,28 @@ export function useGameController({
 
     // Mark as initialized
     gameInitializedRef.current = true;
-  }, [canvasWidth, canvasHeight]);
+  }, [canvasWidth, canvasHeight, ballCount]);
+
+  // Effect to update balls when ball count changes - simpler implementation
+  useEffect(() => {
+    // Log the change and force reinitialization
+    console.log(`GameController: Ball count changed to ${ballCount}`);
+
+    // Clear any existing balls first
+    ballsRef.current = [];
+
+    // Reset game initialization flag
+    gameInitializedRef.current = false;
+
+    // Initialize with new ball count
+    initializeGame();
+  }, [ballCount, initializeGame]);
 
   // Ball control functions
   const handleMouseDown = useCallback((e: MouseEvent | TouchEvent) => {
-    const ball = ballRef.current;
-    let clientX, clientY;
+    if (ballsRef.current.length === 0) return;
 
+    let clientX, clientY;
     if ("touches" in e) {
       clientX = e.touches[0].clientX;
       clientY = e.touches[0].clientY;
@@ -345,18 +358,21 @@ export function useGameController({
       clientY = e.clientY;
     }
 
-    ball.isUserControlled = true;
-    ball.targetX = clientX;
-    // Ensure the ball doesn't go above navbar
-    ball.targetY = Math.max(clientY, navbarHeightRef.current + ball.radius);
+    // Make all balls follow the click point
+    ballsRef.current.forEach((ball) => {
+      ball.isUserControlled = true;
+      ball.targetX = clientX;
+      ball.targetY = Math.max(clientY, navbarHeightRef.current + ball.radius);
+    });
+
+    // Change cursor to grabbing
+    document.body.style.cursor = "grabbing";
   }, []);
 
   const handleMouseMove = useCallback((e: MouseEvent | TouchEvent) => {
-    const ball = ballRef.current;
-    if (!ball.isUserControlled) return;
+    if (ballsRef.current.length === 0) return;
 
     let clientX, clientY;
-
     if ("touches" in e) {
       clientX = e.touches[0].clientX;
       clientY = e.touches[0].clientY;
@@ -365,17 +381,36 @@ export function useGameController({
       clientY = e.clientY;
     }
 
-    ball.targetX = clientX;
-    // Ensure the ball doesn't go above navbar
-    ball.targetY = Math.max(clientY, navbarHeightRef.current + ball.radius);
+    // Update all controlled balls
+    ballsRef.current.forEach((ball) => {
+      if (ball.isUserControlled) {
+        ball.targetX = clientX;
+        ball.targetY = Math.max(clientY, navbarHeightRef.current + ball.radius);
+      }
+    });
+
+    // Check if any ball is being controlled - if yes, maintain grabbing cursor
+    const anyBallControlled = ballsRef.current.some(
+      (ball) => ball.isUserControlled
+    );
+    if (anyBallControlled) {
+      document.body.style.cursor = "grabbing";
+    }
   }, []);
 
   const handleMouseUp = useCallback(() => {
-    const ball = ballRef.current;
-    ball.isUserControlled = false;
+    if (ballsRef.current.length === 0) return;
 
-    // Ensure the ball has a proper velocity when released
-    normalizeBallVelocity(ball);
+    // Release all controlled balls
+    ballsRef.current.forEach((ball) => {
+      if (ball.isUserControlled) {
+        ball.isUserControlled = false;
+        normalizeBallVelocity(ball);
+      }
+    });
+
+    // Reset cursor
+    document.body.style.cursor = "auto";
   }, []);
 
   // Reset game for viewport changes
@@ -389,7 +424,7 @@ export function useGameController({
 
   return {
     pixelsRef,
-    ballRef,
+    ballsRef,
     paddlesRef,
     navbarRef,
     navbarHeightRef,
