@@ -23,6 +23,7 @@ export function useGameController({
   canvasWidth,
   canvasHeight,
 }: GameControllerProps) {
+  // Always use ballCount for compatibility but ignore its value
   const { ballCount } = useTheme();
   const pixelsRef = useRef<Pixel[]>([]);
   const ballsRef = useRef<Ball[]>([]);
@@ -71,7 +72,7 @@ export function useGameController({
     // Only initialize once to prevent re-rendering
     if (gameInitializedRef.current) return;
 
-    console.log(`Initializing game with ${ballCount} balls`);
+    console.log(`Initializing game with 1 ball`); // Always 1 ball
 
     const scale = scaleRef.current;
     // Significantly increase pixel sizes for much larger text
@@ -235,42 +236,37 @@ export function useGameController({
     const ballSize = adjustedLargePixelSize * 0.7;
     const baseSpeed = 7.5 * scale;
 
-    // Initialize multiple balls - ensure we use exactly the number specified by ballCount
+    // Initialize a single ball - always use just one
     ballsRef.current = [];
 
-    console.log(`Creating exactly ${ballCount} balls`);
+    // Create one ball regardless of ballCount value
+    const ballStartX = canvasWidth * (0.3 + Math.random() * 0.4);
+    const ballStartY = canvasHeight * (0.3 + Math.random() * 0.4);
 
-    // Create new balls based on ballCount
-    for (let i = 0; i < ballCount; i++) {
-      // Randomize starting positions for multiple balls
-      const ballStartX = canvasWidth * (0.3 + Math.random() * 0.4); // Random x within central 40% of the canvas
-      const ballStartY = canvasHeight * (0.3 + Math.random() * 0.4); // Random y within central 40% of the canvas
+    // Set initial direction at a random angle with some spread
+    const angle = Math.random() * Math.PI * 2;
+    const dx = Math.cos(angle) * baseSpeed;
+    const dy = Math.sin(angle) * baseSpeed;
 
-      // Set initial direction at a random angle with some spread
-      const angle = Math.random() * Math.PI * 2;
-      const dx = Math.cos(angle) * baseSpeed;
-      const dy = Math.sin(angle) * baseSpeed;
+    ballsRef.current.push({
+      x: ballStartX,
+      y: ballStartY,
+      dx: dx,
+      dy: dy,
+      radius: ballSize,
+      targetX: ballStartX,
+      targetY: ballStartY,
+      velocity: 0,
+      maxVelocity: 18 * scale,
+      friction: 0.95,
+      acceleration: 0.5 * scale,
+      isActive: true,
+      isUserControlled: false,
+      trail: [],
+      baseSpeed: baseSpeed,
+    });
 
-      ballsRef.current.push({
-        x: ballStartX,
-        y: ballStartY,
-        dx: dx,
-        dy: dy,
-        radius: ballSize,
-        targetX: ballStartX,
-        targetY: ballStartY,
-        velocity: 0,
-        maxVelocity: 18 * scale,
-        friction: 0.95,
-        acceleration: 0.5 * scale,
-        isActive: true,
-        isUserControlled: false,
-        trail: [],
-        baseSpeed: baseSpeed,
-      });
-    }
-
-    console.log(`Initialized ${ballsRef.current.length} balls`);
+    console.log(`Initialized 1 ball`); // Always 1 ball
 
     const paddleWidth = adjustedLargePixelSize;
     const paddleLength = 10 * adjustedLargePixelSize;
@@ -328,25 +324,7 @@ export function useGameController({
 
     // Mark as initialized
     gameInitializedRef.current = true;
-  }, [canvasWidth, canvasHeight, ballCount]);
-
-  // Effect to update balls when ball count changes - improved implementation
-  useEffect(() => {
-    // Log the change
-    console.log(`GameController: Ball count changed to ${ballCount}`);
-
-    // Clear any existing balls
-    ballsRef.current = [];
-
-    // Reset game initialization flag
-    gameInitializedRef.current = false;
-
-    // Force re-initialization with a clean slate
-    setTimeout(() => {
-      console.log(`Reinitializing game with ${ballCount} balls`);
-      initializeGame();
-    }, 50); // Slightly longer delay to ensure state is fully updated
-  }, [ballCount, initializeGame]);
+  }, [canvasWidth, canvasHeight]);
 
   // Ball control functions
   const handleMouseDown = useCallback((e: MouseEvent | TouchEvent) => {
